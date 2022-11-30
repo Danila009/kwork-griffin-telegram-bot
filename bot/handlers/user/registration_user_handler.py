@@ -34,8 +34,13 @@ async def enter_token_state(message: types.Message, state: FSMContext):
 
     if len(token) >= 64:
         user_login = message.from_user.username or message.from_user.last_name or message.from_user.first_name
-        await create_user(user_id=message.from_user.id, login=user_login, code=code, token=token)
-        await message.answer(text='Успешно. Добро пожаловать')
+        create_user_check = await\
+            create_user(user_id=message.from_user.id, login=user_login, code=code, token=token)
+
+        if create_user_check:
+            await message.answer(text='Успешно. Добро пожаловать')
+        else:
+            await message.answer(text='Вы регестрировались ранее')
     else:
         await message.answer(text='Токен неверный')
 
