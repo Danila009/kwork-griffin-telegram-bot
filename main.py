@@ -6,7 +6,10 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 
 from bot.data.config import BOT_TOKEN
 from bot.handlers.errors.errors_handler import register_errors_handler
+from bot.handlers.user.personal_account_handler import register_handler_personal_account
 from bot.handlers.user.registration_user_handler import register_handler_registration_user
+from bot.handlers.user.report_handler import register_handler_report
+from bot.services.setting_commands import set_default_commands
 from database.database import create_database
 
 bot = Bot(token=BOT_TOKEN, parse_mode='HTML')
@@ -15,11 +18,14 @@ dp = Dispatcher(bot, storage=MemoryStorage())
 
 def register_all_handlers():
     register_handler_registration_user(dp)
+    register_handler_personal_account(dp)
+    register_handler_report(dp)
+
     register_errors_handler(dp)
 
 
 async def set_all_default_commands():
-    pass
+    await set_default_commands(bot=bot)
 
 
 async def on_startup():

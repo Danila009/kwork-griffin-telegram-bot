@@ -9,6 +9,7 @@ from database.users.user_data_store import create as create_user
 
 async def start_bot(message: types.Message):
     user = message.from_user
+
     await message.answer('Привет, {}!'.format(user.username or user.first_name or user.last_name))
     await message.answer('Введите код доступа')
     await RegistrationUserState.EnterCode.set()
@@ -34,13 +35,28 @@ async def enter_token_state(message: types.Message, state: FSMContext):
 
     if len(token) >= 64:
         user_login = message.from_user.username or message.from_user.last_name or message.from_user.first_name
-        create_user_check = await\
+        create_user_check = await \
             create_user(user_id=message.from_user.id, login=user_login, code=code, token=token)
+
+        # reply_markup = ReplyKeyboardMarkup(
+        #     resize_keyboard=True,
+        #     keyboard=[
+        #         [
+        #             KeyboardButton('/personal_account'),
+        #             KeyboardButton('/reports')
+        #         ],
+        #         [
+        #             KeyboardButton('/faq')
+        #         ]
+        #     ]
+        # )
 
         if create_user_check:
             await message.answer(text='Успешно. Добро пожаловать')
         else:
             await message.answer(text='Вы регестрировались ранее')
+
+        await state.finish()
     else:
         await message.answer(text='Токен неверный')
 
